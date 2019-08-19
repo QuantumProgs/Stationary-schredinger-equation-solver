@@ -1,0 +1,97 @@
+import numpy as np
+import numpy.random as rnd
+import matplotlib.pyplot as plt
+import cmath 
+from scipy.sparse import lil_matrix
+from scipy.sparse.linalg import spsolve
+from numpy.linalg import solve, norm
+from scipy.sparse import csr_matrix
+
+#physical constants,if you deal with experimental data 
+planc = 1.054*10**(-34)
+mass = 9*10**(-31)
+size = 1*10**(-11)
+number = 200
+length = 100.*size
+step = length/number
+
+#Harmonic oscillator potential(for examper), but it could be replaced by arbitrary potential 
+def U(x):
+    return x**2
+
+#matrix that represent numerical differentiation
+def diff(n):
+    a = np.zeros([n,n])
+    for i in range(n):
+        for j in range(n):
+            if i==j:
+                a[i,j] = -2
+            elif i==j+1:
+                a[i,j]=1
+            elif i==j-1:
+                a[i,j]=1
+    return a
+#matrix that represent potential, U - arbitrary function
+def potential1(n,U):
+    a = np.zeros([n,n])
+    for i in range(n):
+        for j in range(n):
+            if i==j:
+                a[i,j] = U(i)
+            else:
+                a[i,j] = 0
+                
+                
+#solver that return w - energy values, v - state vector, income parametrs d - net step, n - number of net points 
+def solver(n,d):
+    b = -diff(n) + 2*potential1(n,U)*d**2.#*10000
+    w, v = LA.eig(b)
+    return w, v                
+                
+
+#matrix that represent numerical differentiation in 2D
+def diff2(n):
+    a = np.zeros([n,n])
+    for i in range(n):
+        for j in range(n):
+            if i==j:
+                a[i,j] = -4
+            elif i==j+1:
+                a[i,j]=1
+            elif i==j-1:
+                a[i,j]=1
+    c = np.zeros([n**2,n**2])
+    for i in range(n**2):
+        for j in range(n**2):
+            if i ==j+n:
+                c[i,j] =1
+            if i ==j-n:
+                c[i,j] =1
+    b = np.kron(np.eye(n),a) +c
+    return b
+
+#matrix that represent potential in 2D
+def potential2D(n,U):
+    k = 150**2
+    k1 = 150**2
+    a = np.zeros((n,n))
+    c = np.kron(np.eye(n),a)
+    for i in range(n):
+        for j in range(n):
+            #if  n/2 - n/10. < j < n/2 + n/10:
+                a[i,j] = U(i,j)
+            #else :
+               # a[i,j] = 1000000
+    b = a.reshape( n**2)
+    for i in range(n**2):
+        for j in range(n**2):
+            c[j,j] = b[j]
+    
+    return c
+    
+    
+    def solver2D(n,d):
+    
+        matr = -diff2(n) + 2*matrix6(n,d)**d**2
+        return eigs(matr*400/2., 20, sigma=0)
+    
